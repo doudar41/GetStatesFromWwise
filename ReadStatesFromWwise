@@ -1,0 +1,39 @@
+    private void ReadStatesFromWwise(string PathToFile)
+    {
+        //Read all lines from file 
+        List<string> Statenames = new List<string>();
+        string[] ListOfStatesFile = File.ReadAllLines(PathToFile);
+        bool stateline = false; //If State Group name is found
+
+        foreach (string LineToRead in ListOfStatesFile)
+        {
+            
+            if (LineToRead.Contains(stateGroupName))
+            {
+                stateline = true;
+            }            
+            //If State Group name is found search for State names 
+            if (stateline)
+            {
+                //Look for string between AkUniqueID and =
+                string toBeSearched = "AkUniqueID ";
+                int checkLine = LineToRead.IndexOf(toBeSearched);
+                int pFrom = LineToRead.IndexOf("AkUniqueID ") + "AkUniqueID ".Length;
+                int pTo = LineToRead.LastIndexOf(" =");
+
+                if (checkLine != -1) //Check is there string AkUniqueID
+                {
+                    string result = LineToRead.Substring(pFrom, pTo - pFrom);
+                    // Exclude word GROUP
+                    if (result != "GROUP")
+                    {
+                        Statenames.Add(result); //Add State to List Statenames
+                    }
+                }
+                //Finishing reading
+                if (LineToRead.Contains("}"))
+                {
+                    stateline = false;
+                    return;
+                }
+            }
